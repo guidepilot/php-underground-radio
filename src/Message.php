@@ -6,7 +6,7 @@ namespace GuidePilot\UndergroundRadio;
 class Message implements Interfaces\Message
 {
 
-    private ?string $body;
+    private ?string $body = null;
 
     /**
      * @var array<string, string>
