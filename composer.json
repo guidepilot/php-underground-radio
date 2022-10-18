@@ -1,0 +1,30 @@
+{
+  "name": "guidepilot/php-underground-radio",
+  "description": "A PHP library that allows messages to be sent via various services that implement both a message queue architecture and a publish/subscribe service",
+  "keywords": ["queue", "redis"],
+  "homepage": "https://guidepilot.de",
+  "type": "library",
+  "license": "MIT",
+  "support": {
+    "source": "https://github.com/guidepilot/php-underground-radio"
+  },
+  "autoload": {
+    "psr-4": {
+      "GuidePilot\\UndergroundRadio\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Daniel Krüger"
+    },
+    {
+      "name": "GuidePilot Team",
+      "homepage": "https://guidepilot.de"
+    }
+  ],
+  "require": {
+    "php": ">=8.1",
+    "ext-redis": "*",
+    "ext-json": "*"
+  }
+}
