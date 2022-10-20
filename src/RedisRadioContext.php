@@ -20,7 +20,7 @@ class RedisRadioContext implements Interfaces\RadioContext {
      * @throws UndergroundRadioException
      *
      */
-    protected function connect() {
+    protected function connect(): void {
         if ($this->redis) {
             return;
         }
@@ -51,7 +51,7 @@ class RedisRadioContext implements Interfaces\RadioContext {
     /**
      * @throws RedisException
      */
-    protected function disconnect() {
+    protected function disconnect(): void {
         $this->redis?->close();
     }
 
@@ -78,7 +78,7 @@ class RedisRadioContext implements Interfaces\RadioContext {
      * @throws UndergroundRadioException
      * @throws RedisException
      */
-    public function publish(string $channelName, string $message) {
+    public function publish(string $channelName, string $message): void {
         $this->getRedis()->publish($channelName, $message);
     }
 
@@ -86,15 +86,27 @@ class RedisRadioContext implements Interfaces\RadioContext {
      * @throws UndergroundRadioException
      * @throws RedisException
      */
-    public function subscribe(string $channelName, callable $callback) {
-        $this->getRedis()->subscribe([$channelName], $callback);
+    public function subscribe(string $channelName, callable $callback): void {
+        $this->redisSubscribe([$channelName], function (
+            Redis $instance, string $channelName, string $message
+        ) use ($callback) {
+            $callback($this, $channelName, $message);
+        });
     }
 
     /**
      * @throws UndergroundRadioException
      * @throws RedisException
      */
-    public function queueAdd(string $queueName, string $message, int $maxLength = 0, $isApproximateMaxLength = true) {
+    protected function redisSubscribe(array $channelNames, callable $callback) {
+        $this->getRedis()->subscribe($channelNames, $callback);
+    }
+
+    /**
+     * @throws UndergroundRadioException
+     * @throws RedisException
+     */
+    public function queueAdd(string $queueName, string $message, int $maxLength = 0, $isApproximateMaxLength = true): void {
         $this->getRedis()->xAdd($queueName, '*', [self::PACK_MESSAGE_KEY => $message], $maxLength, ($maxLength && $isApproximateMaxLength));
     }
 
@@ -102,7 +114,7 @@ class RedisRadioContext implements Interfaces\RadioContext {
      * @throws UndergroundRadioException
      * @throws RedisException
      */
-    public function queueConsumerGroupCreate(string $queueName, string $groupName) {
+    public function queueConsumerGroupCreate(string $queueName, string $groupName): void {
         $this->getRedis()->xGroup('CREATE', $queueName, $queueName, '$');
     }
 
@@ -135,7 +147,7 @@ class RedisRadioContext implements Interfaces\RadioContext {
      * @throws UndergroundRadioException
      * @throws RedisException
      */
-    public function queueConsumerGroupAcknowledge(string $queueName, string $groupName, string $messageId) {
+    public function queueConsumerGroupAcknowledge(string $queueName, string $groupName, string $messageId): void {
         $this->getRedis()->xAck($queueName, $groupName, [$messageId]);
     }
 }

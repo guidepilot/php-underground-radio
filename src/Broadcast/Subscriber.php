@@ -17,7 +17,7 @@ class Subscriber implements Interfaces\Subscriber {
 
     public function subscribe(Channel $channel, SubscriptionMessageProcessor $processor) {
         $this->context->subscribe($channel->getDestinationIdentifier(), function (
-            Redis $instance, string $channelName, string $message
+            RadioContext $radioContext, string $channelName, string $message
         ) use ($processor, $channel) {
 
             $processor->processMessage(
